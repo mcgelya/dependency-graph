@@ -17,8 +17,8 @@ templates = Jinja2Templates(directory="app/templates")
 UPLOAD_DIR = "uploaded_files"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
-async def generate_graph_html(G) -> str:
-    net = Network(height="750px", width="100%", bgcolor="#ffffff", font_color="#000000")
+async def generate_graph_html(G: nx.DiGraph) -> str:
+    net = Network(height="750px", width="100%", bgcolor="#ffffff", font_color="#000000", directed=True)
     net.from_nx(G)
     net.set_options("""
        var options = {
