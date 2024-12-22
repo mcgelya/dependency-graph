@@ -2,7 +2,11 @@
 
 First install `fastapi`:
 ```bash
-pip install fastapi[standard]
+pip install "fastapi[standard]"
+```
+Then install `pip-tools`:
+```bash
+pip install pip-tools
 ```
 Then all other requirements:
 ```bash
