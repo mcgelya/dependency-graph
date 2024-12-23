@@ -2,7 +2,6 @@
 
 {% block content %}
 <h1 class="text-center">Welcome to Dependency Graph Visualizer!</h1>
-<p class="text-center">Upload your requirements.txt file here</p>
 
 {% if message %}
 <div class="alert alert-info text-center" role="alert">
@@ -10,11 +9,14 @@
 </div>
 {% endif %}
 
+{% if error_message %}
+<div class="alert alert-danger text-center" role="alert">
+    {{ error_message }}
+</div>
+{% endif %}
+
 {% if graph_html %}
 <body>
-    <header>
-        <h1 style="text-align: center;">Dependency graph</h1>
-    </header>
     <main>
         <div style="text-align: center; margin: 20px;">
             {{ graph_html | safe }}
@@ -23,6 +25,7 @@
 </body>
 {% endif %}
 
+<p class="text-center">Upload your requirements.txt file here</p>
 <form action="/upload/" method="post" enctype="multipart/form-data" class="text-center">
     <input type="file" name="file" class="form-control mb-3" style="max-width: 300px; margin: auto;">
     <button type="submit" class="btn btn-primary">Upload File</button>

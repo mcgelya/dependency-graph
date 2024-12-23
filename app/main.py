@@ -2,6 +2,7 @@ from fastapi import FastAPI, Request, File, UploadFile, BackgroundTasks
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from pygments import highlight
 from pyvis.network import Network
 import networkx as nx
 import os
@@ -18,25 +19,22 @@ UPLOAD_DIR = "uploaded_files"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 async def generate_graph_html(G: nx.DiGraph) -> str:
-    net = Network(height="750px", width="100%", bgcolor="#ffffff", font_color="#000000", directed=True)
-    net.from_nx(G)
-    net.set_options("""
-       var options = {
-         "nodes": {
-           "color": {
-             "highlight": {
-               "background": "#FF5733",
-               "border": "#FF5733"
-             }
-           }
-         },
-         "edges": {
-           "color": {
-             "highlight": "#FF5733"
-           }
-         }
-       }
-       """)
+    net = Network(height="600px", width="100%", bgcolor="#ffffff", font_color="#000000", directed=True)
+    highlight_node = 'Your project'
+    for node, attributes in G.nodes(data=True):
+        color = "#FFC0CB" if node == highlight_node else "#97c2fc"
+        size = 25 if node == highlight_node else 10
+        net.add_node(
+            node,
+            label=node,
+            title=f"{attributes.get('version', 'N/A')}",
+            value=attributes.get('value', 1),
+            color=color,
+            size=size
+        )
+
+    for edge in G.edges():
+        net.add_edge(edge[0], edge[1], color="#005f99", width=1)
 
     return net.generate_html()
 
@@ -61,7 +59,7 @@ async def show_graph(request: Request, token: str):
         else:
             return templates.TemplateResponse(
                 "index.html",
-                {"request": request, "title": "Dependency Visualizer", "message": f'{stderr}'}
+                {"request": request, "title": "Dependency Visualizer", "error_message": f'{stderr}'}
             )
     else:
         return templates.TemplateResponse(
@@ -83,5 +81,5 @@ async def upload_file(file: UploadFile, background_tasks: BackgroundTasks):
         background_tasks.add_task(dep_graph.generate_graph, file_path, token)
 
         return RedirectResponse(url=f'/graph/{token}', status_code=303)
-    except Exception as e:
+    except:
         return RedirectResponse(url=f'/', status_code=303)
