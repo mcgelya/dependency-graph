@@ -8,7 +8,7 @@ git clone https://github.com/mcgelya/dependency-graph
 Activate `venv`:
 ```bash
 python -m venv .venv
-source .venv/bin/active
+source .venv/bin/activate
 ```
 
 First install `pip-tools`:
